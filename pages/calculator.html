@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="kz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор - MarlenEDU</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .calculator-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 2rem;
+        }
+
+        .calculator-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid rgba(79, 70, 229, 0.1);
+        }
+
+        .calculator-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .calculator-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            background: #f9fafb;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .calculator-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .calculator-input:hover {
+            border-color: #d1d5db;
+            background: white;
+        }
+
+        .operations-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .operation-btn {
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .operation-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .operation-btn:hover::before {
+            transform: translateX(0);
+        }
+
+        .operation-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .operation-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .btn-subtract {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .btn-multiply {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .btn-divide {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .result-container {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .result-container.success {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border-color: #10b981;
+        }
+
+        .result-container.error {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border-color: #ef4444;
+        }
+
+        .result-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .result-value.error {
+            color: #ef4444;
+        }
+
+        .result-value.success {
+            color: #10b981;
+        }
+
+        @media (max-width: 480px) {
+            .calculator-card {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .calculator-title {
+                font-size: 1.5rem;
+            }
+
+            .operations-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .result-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <a href="index.html">MarlenEDU</a>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="courses.html" class="nav-link">Курстар</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">Бағдарламалар ▼</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="frontend.html" class="dropdown-link">Frontend әзірлеу</a></li>
+                            <li><a href="backend.html" class="dropdown-link">Backend әзірлеу</a></li>
+                            <li><a href="mobile.html" class="dropdown-link">Мобильді әзірлеу</a></li>
+                            <li><a href="design.html" class="dropdown-link">UI/UX дизайн</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="about.html" class="nav-link">Біз туралы</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contacts.html" class="nav-link">Байланыс</a>
+                    </li>
+                </ul>
+                <button class="menu-toggle" id="menuToggle">☰</button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    <aside class="drawer" id="drawer">
+        <button class="drawer-close" id="drawerClose">×</button>
+        <div class="drawer-content">
+            <h3>Меню</h3>
+            <ul class="drawer-menu">
+                <li><a href="courses.html">Курстар</a></li>
+                <li><a href="frontend.html">Frontend әзірлеу</a></li>
+                <li><a href="backend.html">Backend әзірлеу</a></li>
+                <li><a href="mobile.html">Мобильді әзірлеу</a></li>
+                <li><a href="design.html">UI/UX дизайн</a></li>
+                <li><a href="about.html">Біз туралы</a></li>
+                <li><a href="contacts.html">Байланыс</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="calculator-container">
+            <div class="calculator-card">
+                <h1 class="calculator-title">Калькулятор</h1>
+                
+                <div class="input-group">
+                    <label class="input-label" for="inputX">X</label>
+                    <input 
+                        type="number" 
+                        id="inputX" 
+                        class="calculator-input" 
+                        placeholder="0"
+                        step="any"
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="inputY">Y</label>
+                    <input 
+                        type="number" 
+                        id="inputY" 
+                        class="calculator-input" 
+                        placeholder="0"
+                        step="any"
+                    >
+                </div>
+
+                <div class="operations-grid">
+                    <button class="operation-btn btn-add" data-operation="add">+</button>
+                    <button class="operation-btn btn-subtract" data-operation="subtract">−</button>
+                    <button class="operation-btn btn-multiply" data-operation="multiply">×</button>
+                    <button class="operation-btn btn-divide" data-operation="divide">÷</button>
+                </div>
+
+                <div class="result-container" id="resultContainer">
+                    <div>
+                        <div class="result-label">Нәтиже</div>
+                        <div class="result-value" id="resultValue">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/js/script.js"></script>
+    <script>
+        class Calculator {
+            constructor() {
+                this.inputX = document.getElementById('inputX');
+                this.inputY = document.getElementById('inputY');
+                this.resultContainer = document.getElementById('resultContainer');
+                this.resultValue = document.getElementById('resultValue');
+                this.operationButtons = document.querySelectorAll('.operation-btn');
+                
+                this.init();
+            }
+
+            init() {
+                this.operationButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const operation = e.target.dataset.operation;
+                        this.calculate(operation);
+                    });
+                });
+
+                this.inputX.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.inputY.focus();
+                    }
+                });
+
+                this.inputY.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.calculate('add');
+                    }
+                });
+
+                this.inputX.addEventListener('input', () => this.clearResult());
+                this.inputY.addEventListener('input', () => this.clearResult());
+            }
+
+            getInputValues() {
+                const x = parseFloat(this.inputX.value);
+                const y = parseFloat(this.inputY.value);
+                
+                return { x, y };
+            }
+
+            validateInputs() {
+                const xValue = this.inputX.value.trim();
+                const yValue = this.inputY.value.trim();
+
+                if (!xValue || !yValue) {
+                    this.showError('X және Y өрістерін толтырыңыз');
+                    return false;
+                }
+
+                const { x, y } = this.getInputValues();
+                
+                if (isNaN(x) || isNaN(y)) {
+                    this.showError('Жарамды сандарды енгізіңіз');
+                    return false;
+                }
+
+                return true;
+            }
+
+            calculate(operation) {
+                if (!this.validateInputs()) {
+                    return;
+                }
+
+                const { x, y } = this.getInputValues();
+                let result;
+
+                try {
+                    switch (operation) {
+                        case 'add':
+                            result = x + y;
+                            break;
+                        case 'subtract':
+                            result = x - y;
+                            break;
+                        case 'multiply':
+                            result = x * y;
+                            break;
+                        case 'divide':
+                            if (y === 0) {
+                                this.showError('Нөлге бөлуге болмайды');
+                                return;
+                            }
+                            result = x / y;
+                            break;
+                        default:
+                            this.showError('Белгісіз операция');
+                            return;
+                    }
+
+                    this.showResult(result);
+                } catch (error) {
+                    this.showError('Есептеу қатесі');
+                }
+            }
+
+            showResult(value) {
+                this.resultContainer.classList.remove('error');
+                this.resultContainer.classList.add('success');
+                this.resultValue.classList.remove('error');
+                this.resultValue.classList.add('success');
+                
+                if (Number.isInteger(value)) {
+                    this.resultValue.textContent = value.toString();
+                } else {
+                    this.resultValue.textContent = value.toFixed(6).replace(/\.?0+$/, '');
+                }
+            }
+
+            showError(message) {
+                this.resultContainer.classList.remove('success');
+                this.resultContainer.classList.add('error');
+                this.resultValue.classList.remove('success');
+                this.resultValue.classList.add('error');
+                this.resultValue.textContent = message;
+                
+                this.resultContainer.classList.add('shake');
+                setTimeout(() => {
+                    this.resultContainer.classList.remove('shake');
+                }, 300);
+            }
+
+            clearResult() {
+                if (this.resultValue.classList.contains('error') || 
+                    this.resultValue.classList.contains('success')) {
+                    this.resultContainer.classList.remove('success', 'error');
+                    this.resultValue.classList.remove('success', 'error');
+                    this.resultValue.textContent = '0';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new Calculator();
+        });
+    </script>
+</body>
+</html>
